@@ -199,6 +199,15 @@
   const CLAVE = "amigo-secreto-v1";
 
   const DECLARACION =
+    "Este juego nace del espíritu de la Navidad, y por eso les pedimos, con todo el cariño, que no gasten mucho dinero. " +
+    "Aquí el aprecio no se mide en precios, sino en detalles.\n\n" +
+    "Que el valor de tu regalo esté en el camino: en salir a buscarlo, en detenerte frente a una vitrina imaginando " +
+    "la sonrisa de quien lo recibirá, en elegirlo pensando «esto le va a gustar», en envolverlo con tus propias manos " +
+    "o pedir que lo envuelvan con esmero.\n\n" +
+    "Todo ese recorrido, hecho con tiempo y con amor, ya es un regalo. " +
+    "Y así, como el más valioso de los regalos, queremos recibirlo y agradecerlo.";
+  // Texto anterior: si un navegador lo tiene guardado, se reemplaza por el nuevo.
+  const DECLARACION_ANTERIOR =
     "Este juego nace del espíritu de la Navidad, por eso les rogamos no gastar mucho dinero. " +
     "El cariño se mide en los detalles. Busquen un regalo cuyo valor esté en todo lo que significa: " +
     "salir a buscarlo, elegirlo imaginando qué podría alegrar a su amigo secreto, pedir que lo envuelvan " +
@@ -295,7 +304,7 @@
   if (!estado || !estado.personas || !estado.personas.some((p) => (p.nombre || "").trim())) {
     estado = { personas: LISTA_INICIAL, evento: "", monto: "", fecha: "", sorteo: null, enviados: [] };
   }
-  if (typeof estado.declaracion !== "string") estado.declaracion = DECLARACION;
+  if (typeof estado.declaracion !== "string" || estado.declaracion.trim() === DECLARACION_ANTERIOR.trim()) estado.declaracion = DECLARACION;
 
   // Enlace privado para precargar una lista: #cargar=<lista codificada>. No queda guardado en la página.
   if (hash.get("cargar")) {
@@ -446,14 +455,19 @@
   function mensaje(p, enlace) {
     const ev = estado.evento.trim(), m = estado.monto.trim(), f = estado.fecha.trim();
     const decl = estado.declaracion.trim();
+    const nombres = estado.personas.map((x) => x.nombre.trim());
+    const lista = nombres.length > 1 ? `${nombres.slice(0, -1).join(", ")} y ${nombres[nombres.length - 1]}` : nombres[0];
     const partes = [
       `${saludo(p.nombre.trim(), tratoDe(p))}:`,
-      `🎄 Ya se hizo el sorteo del amigo secreto${ev ? ` de *${ev}*` : ""}.`,
+      `🎄 Este es el sorteo del amigo secreto de nuestra familia${ev ? ` (*${ev}*)` : ""}.`,
+      `Participan ${lista}. Uno de ellos es tu amigo secreto.`,
     ];
     if (decl) partes.push(`*Declaración de intenciones*\n${decl}`);
     const det = [m && `💰 Monto sugerido máximo: ${m}`, f && `📅 Fecha: ${f}`].filter(Boolean).join("\n");
     if (det) partes.push(det);
-    partes.push(`🎁 Abre este enlace para ver a quién te tocó (¡que nadie te vea!):\n${enlace}`);
+    partes.push(`🎁 Toca el enlace para descubrir quién es (¡que nadie te vea!):`);
+    // El enlace va solo en su línea, sin nada pegado, para que WhatsApp lo muestre como link.
+    partes.push(enlace);
     return partes.join("\n\n");
   }
 
