@@ -10,17 +10,17 @@
   :root {
     --bg: #fbf6ef; --card: #ffffff; --text: #2a211c; --muted: #7a6a5f;
     --line: #eadfd3; --accent: #c8323c; --accent-2: #1f7a4d; --soft: #f6ece1;
-    --wa: #1fa855;
+    --wa: #1fa855; --bad: #d13a3a;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #17120f; --card: #221b17; --text: #f4ece4; --muted: #b3a296;
-      --line: #3a2f28; --accent: #ec5a62; --accent-2: #4cc28a; --soft: #2c231e;
+      --line: #3a2f28; --accent: #ec5a62; --accent-2: #4cc28a; --soft: #2c231e; --bad: #ff6b6b;
     }
   }
   :root[data-theme="dark"] {
     --bg: #17120f; --card: #221b17; --text: #f4ece4; --muted: #b3a296;
-    --line: #3a2f28; --accent: #ec5a62; --accent-2: #4cc28a; --soft: #2c231e;
+    --line: #3a2f28; --accent: #ec5a62; --accent-2: #4cc28a; --soft: #2c231e; --bad: #ff6b6b;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -29,7 +29,7 @@
     font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     min-height: 100vh;
   }
-  main { max-width: 560px; margin: 0 auto; padding: 24px 16px 48px; }
+  main { max-width: 600px; margin: 0 auto; padding: 24px 16px 48px; }
   h1 { font-size: 28px; margin: 4px 0 2px; letter-spacing: -0.02em; }
   .sub { color: var(--muted); margin: 0 0 20px; }
   .card {
@@ -42,29 +42,53 @@
     width: 100%; font: inherit; color: var(--text); background: var(--bg);
     border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
   }
+  textarea { resize: vertical; min-height: 240px; line-height: 1.5; }
   input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-  .row { display: grid; grid-template-columns: 28px 1fr 1fr 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
-  .row .n { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; font-size: 14px; }
+  .row input { min-width: 0; }
+  input.bad { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 8%, var(--bg)); }
+
+  .row {
+    display: grid; gap: 8px; align-items: center; margin-bottom: 10px;
+    grid-template-columns: 20px 1fr 1fr auto 32px;
+    grid-template-areas: "n nom tel trato x";
+  }
+  .row .n { grid-area: n; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; font-size: 14px; }
+  .row .nom { grid-area: nom; } .row .tel { grid-area: tel; } .row .trato { grid-area: trato; } .row .x { grid-area: x; }
+  .row .aviso { grid-column: 2 / -1; color: var(--bad); font-size: 13px; margin-top: -4px; }
+  @media (max-width: 540px) {
+    .row {
+      grid-template-columns: 20px 1fr auto 32px;
+      grid-template-areas: "n nom trato x" ". tel tel tel";
+      padding-bottom: 10px; border-bottom: 1px solid var(--line);
+    }
+  }
+  .trato {
+    border: 1px solid var(--line); background: var(--soft); color: var(--text);
+    border-radius: 999px; padding: 8px 12px; font-family: inherit; font-size: 14px; line-height: 1; cursor: pointer; white-space: nowrap;
+  }
   .icon-btn {
-    width: 36px; height: 40px; border: none; background: none; color: var(--muted);
+    width: 32px; height: 40px; border: none; background: none; color: var(--muted);
     font-size: 20px; cursor: pointer; border-radius: 8px;
   }
   .icon-btn:hover { background: var(--soft); color: var(--accent); }
-  button.main, a.main {
-    display: block; width: 100%; text-align: center; text-decoration: none;
-    border: none; border-radius: 12px; padding: 14px; font: 600 17px/1 inherit; font-family: inherit;
+  button.main {
+    display: block; width: 100%; text-align: center;
+    border: none; border-radius: 12px; padding: 16px; font-family: inherit; font-size: 17px; font-weight: 600; line-height: 1;
     background: var(--accent); color: #fff; cursor: pointer;
   }
-  button.main:disabled { opacity: .45; cursor: default; }
   button.ghost {
     border: 1px dashed var(--line); background: none; color: var(--text); width: 100%;
     border-radius: 10px; padding: 10px; font: inherit; cursor: pointer; margin-top: 4px;
   }
   button.link { background: none; border: none; color: var(--muted); text-decoration: underline; font: inherit; cursor: pointer; padding: 8px; }
-  .err { color: var(--accent); font-size: 14px; min-height: 20px; margin: 8px 0 0; }
+  .err { color: var(--bad); font-size: 14px; min-height: 20px; margin: 8px 0 0; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .send { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .declaracion-titulo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 18px 0 6px; }
+  .declaracion-titulo b { font-size: 15px; }
+
+  .send { padding: 14px 0; border-bottom: 1px solid var(--line); }
   .send:last-child { border-bottom: none; }
+  .send .top { display: flex; align-items: center; gap: 12px; }
   .send .who { flex: 1; min-width: 0; }
   .send .who b { display: block; }
   .send .who small { color: var(--muted); }
@@ -73,24 +97,38 @@
     padding: 10px 16px; font-weight: 600; white-space: nowrap; font-size: 15px;
   }
   .wa.done { background: var(--soft); color: var(--accent-2); }
+  .copiar {
+    display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 8px;
+    background: var(--soft); border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 10px; color: var(--muted); font: 13px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+    cursor: pointer; text-align: left;
+  }
+  .copiar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copiar em { font: 600 13px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-style: normal; color: var(--text); white-space: nowrap; }
+  .copiar.ok { border-color: var(--accent-2); }
+  .copiar.ok em { color: var(--accent-2); }
   .progress { height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; margin: 4px 0 12px; }
   .progress i { display: block; height: 100%; background: var(--accent-2); width: 0; transition: width .3s; }
   .note { font-size: 14px; color: var(--muted); }
   .hidden { display: none !important; }
 
   /* Revelar */
-  .reveal { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 16px; }
+  .reveal { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px 16px; max-width: 560px; margin: 0 auto; }
   .gift { font-size: 110px; cursor: pointer; border: none; background: none; user-select: none; animation: wiggle 2.2s ease-in-out infinite; }
   @keyframes wiggle { 0%,80%,100% { transform: rotate(0) } 85% { transform: rotate(-8deg) } 90% { transform: rotate(8deg) } 95% { transform: rotate(-4deg) } }
   .secret { font-size: 40px; font-weight: 800; color: var(--accent); margin: 8px 0; letter-spacing: -0.02em; animation: pop .5s cubic-bezier(.2,1.6,.4,1); word-break: break-word; }
   @keyframes pop { from { transform: scale(.3); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+  .carta { text-align: left; margin-top: 28px; }
+  .carta h3 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; }
+  .carta p { margin: 0; font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 17px; line-height: 1.6; white-space: pre-line; }
 </style>
 </head>
 <body>
 
 <!-- Página que abre cada participante desde su WhatsApp -->
 <section id="vistaRevelar" class="reveal hidden">
-  <p id="holaRevelar" class="sub" style="font-size:18px"></p>
+  <p id="holaRevelar" style="font-size:20px; margin:0 0 4px; font-weight:600"></p>
+  <p id="eventoRevelar" class="sub" style="margin-bottom:12px"></p>
   <button class="gift" id="regalo" aria-label="Abrir regalo">🎁</button>
   <p id="tocaRevelar" class="note">Toca el regalo para ver quién te tocó.<br>Asegúrate de que nadie esté mirando 👀</p>
   <div id="resultadoRevelar" class="hidden">
@@ -98,6 +136,10 @@
     <div class="secret" id="nombreSecreto"></div>
     <p id="detallesRevelar" class="note"></p>
     <p class="note">🤫 No se lo cuentes a nadie.</p>
+  </div>
+  <div id="cartaRevelar" class="carta card hidden">
+    <h3>Declaración de intenciones</h3>
+    <p id="textoCarta"></p>
   </div>
 </section>
 
@@ -110,17 +152,27 @@
       <h2>Participantes</h2>
       <div id="filas"></div>
       <button class="ghost" id="agregar">+ Agregar persona</button>
-      <p class="note" style="margin-bottom:0">El número va con o sin +56. Ej: 9 1234 5678</p>
+      <p class="note" style="margin-bottom:0">
+        Celulares de Chile: 9 1234 5678 (con o sin +56).<br>
+        Celulares de EE.UU.: +1 (301) 919-1512 (con o sin +1).<br>
+        Toca «Querido / Querida» para cambiar cómo se le saluda.
+      </p>
     </div>
 
     <div class="card">
-      <h2>Detalles (opcional)</h2>
+      <h2>Detalles</h2>
       <label for="evento">Nombre del evento</label>
       <input id="evento" placeholder="Navidad familia 2026">
       <div class="two">
-        <div><label for="monto">Monto</label><input id="monto" placeholder="$15.000"></div>
+        <div><label for="monto">Monto sugerido máximo</label><input id="monto" placeholder="$15.000"></div>
         <div><label for="fecha">Fecha</label><input id="fecha" placeholder="24 de diciembre"></div>
       </div>
+      <div class="declaracion-titulo">
+        <b>Declaración de intenciones</b>
+        <button class="link" id="restaurar" style="padding:0; font-size:13px">Restaurar texto</button>
+      </div>
+      <textarea id="declaracion" aria-label="Declaración de intenciones"></textarea>
+      <p class="note" style="margin-bottom:0">Va en el mensaje de cada persona. Déjalo vacío si no quieres incluirlo.</p>
     </div>
 
     <button class="main" id="sortear">Hacer el sorteo</button>
@@ -130,8 +182,8 @@
   <div id="pasoEnviar" class="hidden">
     <div class="card">
       <h2>¡Sorteo listo! Ahora avisa</h2>
-      <p class="note" style="margin-top:0">Toca cada botón: se abre WhatsApp con el mensaje escrito y solo tocas enviar.
-        El mensaje lleva un enlace secreto; tú no verás a quién le tocó quién.</p>
+      <p class="note" style="margin-top:0">Toca «Enviar WhatsApp»: se abre el chat con el mensaje escrito y solo tocas enviar.
+        Si prefieres mandarlo tú, toca el enlace para copiarlo. Tú no verás a quién le tocó quién.</p>
       <div class="progress"><i id="barra"></i></div>
       <div id="envios"></div>
     </div>
@@ -143,6 +195,13 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const CLAVE = "amigo-secreto-v1";
+
+  const DECLARACION =
+    "Este juego nace del espíritu de la Navidad, por eso les rogamos no gastar mucho dinero. " +
+    "El cariño se mide en los detalles. Busquen un regalo cuyo valor esté en todo lo que significa: " +
+    "salir a buscarlo, elegirlo imaginando qué podría alegrar a su amigo secreto, pedir que lo envuelvan " +
+    "o envolverlo con sus propias manos.\n\n" +
+    "Todo ese camino, hecho con tiempo y con afecto, ya es un regalo. Y así, como un regalo, queremos recibirlo y valorarlo.";
 
   // ---------- Codificar el secreto en el enlace (que no se lea a simple vista) ----------
   const MASCARA = "regalo-sorpresa-navidad";
@@ -163,6 +222,8 @@
     return JSON.parse(new TextDecoder().decode(bytes));
   }
 
+  const saludo = (nombre, trato) => `${trato === "a" ? "Querida" : "Querido"} ${nombre}`;
+
   // ---------- Vista de revelar ----------
   const hash = new URLSearchParams(location.hash.slice(1));
   if (hash.get("s")) {
@@ -175,57 +236,111 @@
       return;
     }
     document.title = "Tu amigo secreto 🎁";
-    $("holaRevelar").textContent = `Hola, ${d.de}` + (d.ev ? ` · ${d.ev}` : "");
+    $("holaRevelar").textContent = saludo(d.de, d.t) + ":";
+    $("eventoRevelar").textContent = d.ev || "";
+    const carta = d.dd ? DECLARACION : (d.dc || "");
+    if (carta) { $("textoCarta").textContent = carta; $("cartaRevelar").classList.remove("hidden"); }
     $("regalo").addEventListener("click", () => {
       $("regalo").classList.add("hidden"); $("tocaRevelar").classList.add("hidden");
       $("nombreSecreto").textContent = d.para;
-      const det = [d.m && `Monto: ${d.m}`, d.f && `Fecha: ${d.f}`].filter(Boolean).join(" · ");
+      const det = [d.m && `Monto sugerido máximo: ${d.m}`, d.f && `Fecha: ${d.f}`].filter(Boolean).join(" · ");
       $("detallesRevelar").textContent = det;
       $("resultadoRevelar").classList.remove("hidden");
     });
     return;
   }
 
+  // ---------- Teléfonos: Chile y EE.UU. ----------
+  // Devuelve { wa: "56912345678", bonito: "+56 9 1234 5678" } o null si no es válido.
+  function telefono(t) {
+    const d = (t || "").replace(/\D/g, "");
+    let m;
+    // Chile, celular: 9 XXXX XXXX, con o sin 56.
+    if ((m = d.match(/^(?:56)?(9\d{8})$/))) {
+      const n = m[1];
+      return { wa: "56" + n, bonito: `+56 ${n[0]} ${n.slice(1, 5)} ${n.slice(5)}` };
+    }
+    // EE.UU.: (área) XXX-XXXX, con o sin 1. Área y central no empiezan con 0 ni 1.
+    if ((m = d.match(/^1?([2-9]\d{2})([2-9]\d{2})(\d{4})$/))) {
+      return { wa: "1" + m[1] + m[2] + m[3], bonito: `+1 (${m[1]}) ${m[2]}-${m[3]}` };
+    }
+    return null;
+  }
+  const MENSAJE_TEL = "Usa un celular de Chile (+56 9 1234 5678) o de EE.UU. (+1 301 919 1512).";
+
+  // Si el nombre termina en "a", seguramente es "Querida" (se puede cambiar con un toque).
+  function adivinarTrato(nombre) {
+    const primero = (nombre.trim().split(/\s+/)[0] || "").toLowerCase();
+    return /a$/.test(primero) && !["luca", "joshua", "nikita", "garcía", "borja"].includes(primero) ? "a" : "o";
+  }
+
   // ---------- Vista del organizador ----------
   $("vistaOrganizar").classList.remove("hidden");
-  let estado = cargar() || { personas: [{ nombre: "", tel: "" }, { nombre: "", tel: "" }, { nombre: "", tel: "" }], evento: "", monto: "", fecha: "", sorteo: null, enviados: [] };
+  const vacio = () => ({ nombre: "", tel: "", trato: null });
+  let estado = cargar() || { personas: [vacio(), vacio(), vacio()], evento: "", monto: "", fecha: "", sorteo: null, enviados: [] };
+  if (typeof estado.declaracion !== "string") estado.declaracion = DECLARACION;
+
+  // Enlace privado para precargar una lista: #cargar=<lista codificada>. No queda guardado en la página.
+  if (hash.get("cargar")) {
+    try {
+      const lista = decodificar(hash.get("cargar"));
+      const hayOtra = estado.personas.some((p) => p.nombre.trim());
+      if (Array.isArray(lista.p) && (!hayOtra || confirm(`¿Reemplazar la lista actual por la de ${lista.p.length} personas?`))) {
+        estado.personas = lista.p.map(([nombre, tel, trato]) => ({ nombre, tel, trato: trato || null }));
+        ["evento", "monto", "fecha"].forEach((k) => { if (lista[k]) estado[k] = lista[k]; });
+        estado.sorteo = null; estado.enviados = [];
+        guardar();
+      }
+    } catch {}
+    history.replaceState(null, "", location.pathname + location.search);
+  }
 
   function cargar() { try { return JSON.parse(localStorage.getItem(CLAVE)); } catch { return null; } }
   function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch {} }
+  const tratoDe = (p) => p.trato || adivinarTrato(p.nombre);
 
   function pintarFilas() {
     const cont = $("filas"); cont.innerHTML = "";
     estado.personas.forEach((p, i) => {
       const fila = document.createElement("div"); fila.className = "row";
       fila.innerHTML = `<span class="n">${i + 1}</span>
-        <input placeholder="Nombre" autocomplete="off" value="">
-        <input placeholder="Teléfono" inputmode="tel" autocomplete="off" value="">
-        <button class="icon-btn" aria-label="Quitar">×</button>`;
-      const [nom, tel] = fila.querySelectorAll("input");
+        <input class="nom" placeholder="Nombre" autocomplete="off">
+        <input class="tel" placeholder="Celular" inputmode="tel" autocomplete="off">
+        <button class="trato" type="button"></button>
+        <button class="icon-btn x" aria-label="Quitar">×</button>
+        <div class="aviso hidden"></div>`;
+      const nom = fila.querySelector(".nom"), tel = fila.querySelector(".tel");
+      const trato = fila.querySelector(".trato"), aviso = fila.querySelector(".aviso");
       nom.value = p.nombre; tel.value = p.tel;
-      nom.oninput = () => { p.nombre = nom.value; guardar(); };
-      tel.oninput = () => { p.tel = tel.value; guardar(); };
-      fila.querySelector("button").onclick = () => { estado.personas.splice(i, 1); guardar(); pintarFilas(); };
+      const pintarTrato = () => { trato.textContent = tratoDe(p) === "a" ? "Querida" : "Querido"; };
+      const validar = (mostrar) => {
+        const malo = p.tel.trim() && !telefono(p.tel);
+        tel.classList.toggle("bad", !!malo);
+        aviso.textContent = malo ? MENSAJE_TEL : "";
+        aviso.classList.toggle("hidden", !(malo && mostrar));
+      };
+      nom.oninput = () => { p.nombre = nom.value; guardar(); pintarTrato(); };
+      tel.oninput = () => { p.tel = tel.value; guardar(); validar(false); };
+      tel.onblur = () => {
+        const t = telefono(p.tel);
+        if (t) { p.tel = t.bonito; tel.value = t.bonito; guardar(); }
+        validar(true);
+      };
+      trato.onclick = () => { p.trato = tratoDe(p) === "a" ? "o" : "a"; guardar(); pintarTrato(); };
+      fila.querySelector(".x").onclick = () => { estado.personas.splice(i, 1); guardar(); pintarFilas(); };
+      pintarTrato(); validar(true);
       cont.appendChild(fila);
     });
   }
-  ["evento", "monto", "fecha"].forEach((k) => {
+  ["evento", "monto", "fecha", "declaracion"].forEach((k) => {
     $(k).value = estado[k] || "";
     $(k).oninput = () => { estado[k] = $(k).value; guardar(); };
   });
+  $("restaurar").onclick = () => { estado.declaracion = DECLARACION; $("declaracion").value = DECLARACION; guardar(); };
   $("agregar").onclick = () => {
-    estado.personas.push({ nombre: "", tel: "" }); guardar(); pintarFilas();
-    const ins = $("filas").querySelectorAll(".row:last-child input"); ins[0].focus();
+    estado.personas.push(vacio()); guardar(); pintarFilas();
+    $("filas").querySelector(".row:last-of-type .nom").focus();
   };
-
-  // Número chileno o internacional → solo dígitos con código de país.
-  function normalizarTel(t) {
-    let d = (t || "").replace(/\D/g, "");
-    if (d.startsWith("00")) d = d.slice(2);
-    if (d.length === 9 && d.startsWith("9")) d = "56" + d;      // celular chileno
-    if (d.length === 8) d = "569" + d;                           // celular chileno sin el 9
-    return d.length >= 10 ? d : null;
-  }
 
   // La bolsa: cada uno saca un papel; si sale el suyo, se vuelve a sacar.
   // Si el último solo puede sacar su propio nombre, se repite el sorteo completo.
@@ -253,45 +368,93 @@
     if (personas.length < 3) { err.textContent = "Se necesitan al menos 3 personas."; return; }
     for (const [i, p] of personas.entries()) {
       if (!p.nombre.trim()) { err.textContent = `Falta el nombre de la persona ${i + 1}.`; return; }
-      if (!normalizarTel(p.tel)) { err.textContent = `El teléfono de ${p.nombre.trim()} no parece válido.`; return; }
+      if (!telefono(p.tel)) { err.textContent = `El celular de ${p.nombre.trim()} no es válido. ${MENSAJE_TEL}`; return; }
     }
     const nombres = personas.map((p) => p.nombre.trim().toLowerCase());
     const rep = nombres.find((x, i) => nombres.indexOf(x) !== i);
     if (rep) { err.textContent = `Hay un nombre repetido: ${rep}. Agrega un apellido para distinguirlos.`; return; }
-    if (estado.sorteo && !confirm("Ya hay un sorteo hecho. ¿Hacer uno nuevo? Los enlaces que ya enviaste quedarán desactualizados.")) return;
+    const tels = personas.map((p) => telefono(p.tel).wa);
+    const telRep = tels.findIndex((x, i) => tels.indexOf(x) !== i);
+    if (telRep >= 0 && !confirm(`${personas[telRep].nombre.trim()} tiene el mismo celular que otra persona. ¿Seguir igual?`)) return;
+    if (estado.sorteo && !confirm("Ya hay un sorteo hecho. ¿Hacer uno nuevo? Los enlaces que ya enviaste dejarán de servir.")) return;
 
     estado.personas = personas;
+    const decl = estado.declaracion.trim();
     const asignado = sortear(personas.length);
-    estado.sorteo = asignado.map((j, i) => codificar({
-      de: personas[i].nombre.trim(), para: personas[j].nombre.trim(),
-      ev: estado.evento.trim(), m: estado.monto.trim(), f: estado.fecha.trim(),
-    }));
+    estado.sorteo = asignado.map((j, i) => {
+      const datos = {
+        de: personas[i].nombre.trim(), t: tratoDe(personas[i]), para: personas[j].nombre.trim(),
+        ev: estado.evento.trim(), m: estado.monto.trim(), f: estado.fecha.trim(),
+      };
+      // El texto de siempre va como una marca corta; uno editado va completo.
+      if (decl === DECLARACION.trim()) datos.dd = 1; else if (decl) datos.dc = decl;
+      return codificar(datos);
+    });
     estado.enviados = [];
     guardar(); mostrarEnvios();
   };
 
-  function base() { return location.href.split("#")[0]; }
+  // Los enlaces siempre apuntan a la página pública, aunque la app se abra desde un archivo en el computador.
+  const PUBLICA = "https://hvergarc.github.io/amigo-secreto/";
+  function base() { return location.protocol.startsWith("http") ? location.href.split("#")[0] : PUBLICA; }
+
+  async function copiar(texto) {
+    try { await navigator.clipboard.writeText(texto); return true; } catch {}
+    const t = document.createElement("textarea");
+    t.value = texto; t.style.position = "fixed"; t.style.opacity = "0";
+    document.body.appendChild(t); t.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch {}
+    t.remove(); return ok;
+  }
+
+  function mensaje(p, enlace) {
+    const ev = estado.evento.trim(), m = estado.monto.trim(), f = estado.fecha.trim();
+    const decl = estado.declaracion.trim();
+    const partes = [
+      `${saludo(p.nombre.trim(), tratoDe(p))}:`,
+      `🎄 Ya se hizo el sorteo del amigo secreto${ev ? ` de *${ev}*` : ""}.`,
+    ];
+    if (decl) partes.push(`*Declaración de intenciones*\n${decl}`);
+    const det = [m && `💰 Monto sugerido máximo: ${m}`, f && `📅 Fecha: ${f}`].filter(Boolean).join("\n");
+    if (det) partes.push(det);
+    partes.push(`🎁 Abre este enlace para ver a quién te tocó (¡que nadie te vea!):\n${enlace}`);
+    return partes.join("\n\n");
+  }
 
   function mostrarEnvios() {
     $("pasoLista").classList.add("hidden"); $("pasoEnviar").classList.remove("hidden");
     const cont = $("envios"); cont.innerHTML = "";
     estado.personas.forEach((p, i) => {
+      const tel = telefono(p.tel);
       const enlace = `${base()}#s=${estado.sorteo[i]}`;
-      const ev = estado.evento.trim();
-      const msj = `🎁 ¡Hola ${p.nombre.trim()}! Ya se hizo el sorteo del amigo secreto${ev ? ` (${ev})` : ""}.\n\n` +
-        `Abre este enlace para ver a quién te tocó (¡que nadie te vea!):\n${enlace}`;
-      const url = `https://wa.me/${normalizarTel(p.tel)}?text=${encodeURIComponent(msj)}`;
       const fila = document.createElement("div"); fila.className = "send";
-      fila.innerHTML = `<div class="who"><b></b><small></small></div><a class="wa" target="_blank" rel="noopener"></a>`;
+      fila.innerHTML = `<div class="top">
+          <div class="who"><b></b><small></small></div>
+          <a class="wa" target="_blank" rel="noopener"></a>
+        </div>
+        <button class="copiar" type="button" title="Copiar enlace"><span></span><em>Copiar</em></button>`;
       fila.querySelector("b").textContent = `${i + 1}. ${p.nombre.trim()}`;
-      fila.querySelector("small").textContent = "+" + normalizarTel(p.tel);
-      const a = fila.querySelector("a"); a.href = url;
+      fila.querySelector("small").textContent = tel ? tel.bonito : p.tel;
+      const a = fila.querySelector(".wa");
+      a.href = !tel ? "#" : `https://wa.me/${tel.wa}?text=${encodeURIComponent(mensaje(p, enlace))}`;
+      const marcar = () => { if (!estado.enviados.includes(i)) estado.enviados.push(i); guardar(); pintar(); barra(); };
       const pintar = () => {
         const hecho = estado.enviados.includes(i);
         a.textContent = hecho ? "✓ Enviado" : "Enviar WhatsApp";
         a.classList.toggle("done", hecho);
       };
-      a.addEventListener("click", () => { if (!estado.enviados.includes(i)) estado.enviados.push(i); guardar(); pintar(); barra(); });
+      a.addEventListener("click", marcar);
+
+      const btn = fila.querySelector(".copiar");
+      btn.querySelector("span").textContent = "🔗 " + enlace.replace(/^https?:\/\//, "");
+      btn.addEventListener("click", async () => {
+        const ok = await copiar(enlace);
+        const em = btn.querySelector("em");
+        em.textContent = ok ? "✓ Copiado" : "No se pudo copiar";
+        btn.classList.toggle("ok", ok);
+        if (ok) marcar();
+        setTimeout(() => { em.textContent = "Copiar"; btn.classList.remove("ok"); }, 2500);
+      });
       pintar(); cont.appendChild(fila);
     });
     barra();
