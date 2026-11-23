@@ -152,6 +152,8 @@
       <h2>Participantes</h2>
       <div id="filas"></div>
       <button class="ghost" id="agregar">+ Agregar persona</button>
+      <button class="ghost" id="cargarArchivo">📄 Cargar lista desde archivo .txt</button>
+      <input type="file" id="archivo" accept=".txt,.csv,text/plain" class="hidden">
       <p class="note" style="margin-bottom:0">
         Celulares de Chile: 9 1234 5678 (con o sin +56).<br>
         Celulares de EE.UU.: +1 (301) 919-1512 (con o sin +1).<br>
@@ -277,7 +279,22 @@
   // ---------- Vista del organizador ----------
   $("vistaOrganizar").classList.remove("hidden");
   const vacio = () => ({ nombre: "", tel: "", trato: null });
-  let estado = cargar() || { personas: [vacio(), vacio(), vacio()], evento: "", monto: "", fecha: "", sorteo: null, enviados: [] };
+  // Lista con la que parte la página (en cualquier teléfono o computador).
+  const LISTA_INICIAL = [
+    ["Edwin", "+56 9 9153 6661", "o"],
+    ["Luis", "+56 9 3973 3406", "o"],
+    ["Bromilia", "+1 (301) 919-1512", "a"],
+    ["Camila", "+56 9 3891 0428", "a"],
+    ["Carmen", "+56 9 8205 9832", "a"],
+    ["Gloria", "+56 9 3266 1870", "a"],
+    ["Tito", "+56 9 9319 9608", "o"],
+    ["Miguel", "+56 9 5370 6383", "o"],
+  ].map(([nombre, tel, trato]) => ({ nombre, tel, trato }));
+  let estado = cargar();
+  // Si en este navegador no hay una lista con nombres, parte con la lista inicial.
+  if (!estado || !estado.personas || !estado.personas.some((p) => (p.nombre || "").trim())) {
+    estado = { personas: LISTA_INICIAL, evento: "", monto: "", fecha: "", sorteo: null, enviados: [] };
+  }
   if (typeof estado.declaracion !== "string") estado.declaracion = DECLARACION;
 
   // Enlace privado para precargar una lista: #cargar=<lista codificada>. No queda guardado en la página.
@@ -340,6 +357,25 @@
   $("agregar").onclick = () => {
     estado.personas.push(vacio()); guardar(); pintarFilas();
     $("filas").querySelector(".row:last-of-type .nom").focus();
+  };
+
+  // Archivo .txt: una persona por línea → "Nombre, celular, Querido/Querida". Las líneas con # se ignoran.
+  $("cargarArchivo").onclick = () => $("archivo").click();
+  $("archivo").onchange = async () => {
+    const f = $("archivo").files[0]; if (!f) return;
+    const lineas = (await f.text()).split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith("#"));
+    const personas = lineas.map((l) => {
+      const [nombre = "", tel = "", trato = ""] = l.split(/[,;\t]/).map((x) => x.trim());
+      const t = /querida|ella|^a$/i.test(trato) ? "a" : /querido|él|el|^o$/i.test(trato) ? "o" : null;
+      const ok = telefono(tel);
+      return { nombre, tel: ok ? ok.bonito : tel, trato: t };
+    }).filter((p) => p.nombre);
+    $("archivo").value = "";
+    if (!personas.length) { $("error").textContent = "El archivo no tiene personas. Usa una por línea: Nombre, celular"; return; }
+    const hayOtra = estado.personas.some((p) => p.nombre.trim());
+    if (hayOtra && !confirm(`¿Reemplazar la lista actual por las ${personas.length} personas del archivo?`)) return;
+    estado.personas = personas; estado.sorteo = null; estado.enviados = [];
+    guardar(); pintarFilas(); $("error").textContent = "";
   };
 
   // La bolsa: cada uno saca un papel; si sale el suyo, se vuelve a sacar.
